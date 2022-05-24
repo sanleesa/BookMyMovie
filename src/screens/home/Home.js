@@ -3,6 +3,7 @@ import Header from '../../common/header/Header';
 import './Home.css';
 import { makeStyles } from "@material-ui/styles";
 import UpcomingMovies from './home-component/UpcomingMovies';
+import AllMovies from './home-component/AllMovies';
 
 
 const useStyles = makeStyles(theme => ({
@@ -50,6 +51,7 @@ function Home() {
         </span>
       </div>
       <UpcomingMovies classes={classes} tileData={tileData} />
+      <AllMovies movies={tileData} />
     </Fragment>
   )
 }
