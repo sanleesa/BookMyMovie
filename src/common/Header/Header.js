@@ -304,11 +304,11 @@ function Header() {
                 variant="standard"
                 helperText={regsiterPassword.helperText}
                 value={regsiterPassword.registerpassword}
-                onChange={event => handleInputChange(event, regsiterPassword, "registerpassword")}
+                onChange={event => handleInputChange(event, regsiterPassword, "regsiterpass")}
                 error={regsiterPassword.error}
               />
               <TextField
-                type="password"
+                type="text"
                 required
                 label="Contact"
                 variant="standard"
