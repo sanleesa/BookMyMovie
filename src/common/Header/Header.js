@@ -5,14 +5,20 @@ import {
   Button,
   Tabs,
   Tab,
-  Box,
   TextField
 } from '@material-ui/core'
+import { styled } from '@material-ui/styles'
+import { compose, spacing, palette } from '@material-ui/system';
 import Modal from 'react-modal'
 
+const Box = styled('div')(
+  compose(
+    spacing,
+    palette,
+  ),
+)
 
-
-function Header(props) {
+function Header() {
 
   Modal.setAppElement("#root")
 
@@ -65,9 +71,9 @@ function Header(props) {
     },
   }
 
-  
-  const handleRegister = () => {
-    e.preventDefault();
+
+  const handleRegister = (event) => {
+    event.preventDefault();
     setRegistration(true);
   }
 
@@ -82,7 +88,7 @@ function Header(props) {
       error: false
     }
     const loginPassword = {
-      loginPassword: "",
+      loginpassword: "",
       helperText: "",
       error: false
     }
@@ -112,8 +118,8 @@ function Header(props) {
       error: false
     }
 
-    setUserName("")
-    setLoginPassword("")
+    setUserName(userName)
+    setLoginPassword(loginPassword)
     setFirstName(firstName)
     setLastName(lastName)
     setEmail(email)
@@ -163,6 +169,7 @@ function Header(props) {
       //   closeModal()
       // }
       setIsLoggedIn(true)
+      closeModal()
     }
   }
 
@@ -189,8 +196,17 @@ function Header(props) {
       case "firstname":
         setFirstName(currentObject)
         break
+      case "lastname":
+        setLastName(currentObject)
+        break
+      case "email":
+        setEmail(currentObject)
+        break
       case "regsiterpass":
         setRegsiterPassword(currentObject)
+        break
+      case "contact":
+        setContact(currentObject)
         break
       default:
         break
