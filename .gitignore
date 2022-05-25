@@ -1608,3 +1608,4 @@ node_modules/youtube-player/package.json
 node_modules/youtube-player/README.md
 node_modules
 .vscode/launch.json
+src/screens/home/home-component/AllMovies.js
