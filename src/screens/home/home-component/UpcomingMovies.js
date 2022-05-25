@@ -1,32 +1,33 @@
 import React, { Fragment } from 'react';
 import { makeStyles } from '@material-ui/styles'
-import ImageList from '@material-ui/core/ImageList';
-import ImageListItem from '@material-ui/core/ImageListItem';
-import ImageListItemBar from '@material-ui/core/ImageListItemBar';
+import { GridList, GridListTile, GridListTileBar } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    margin: 0,
-    flexWrap: "nowrap",
-  },
-}));
+// const useStyles = makeStyles(theme => ({
+//   root: {
+//     margin: 0,
+//     flexWrap: "nowrap",
+//   },
+// }));
+
+const gridList = {
+  flexWrap: 'nowrap',
+  transform: 'translateZ(0)',
+};
 
 function UpcomingMovies({ tileData }) {
-  const classes = useStyles();
+  //const classes = useStyles();
   return (
     <Fragment>
-      <ImageList
-        className={classes.root}
-        style={{ margin: 0 }}
-        cols={6}
-        rowHeight={250}>
-        {(tileData || []).map(movie => (
-          <ImageListItem key={movie.id}>
-            <img src={movie.poster_url} alt={movie.title} />
-            <ImageListItemBar title={movie.title} />
-          </ImageListItem>
+      <GridList style={gridList} cols={6} cellHeight={250}>
+        {tileData.map(movies => (
+          <GridListTile key={movies.id}>
+            <img src={movies.poster_url} alt={movies.title} />
+            <GridListTileBar
+              title={movies.title}
+            />
+          </GridListTile>
         ))}
-      </ImageList>
+      </GridList>
     </Fragment>
   )
 }
