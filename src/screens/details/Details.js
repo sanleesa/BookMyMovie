@@ -62,6 +62,11 @@ function Details({ match }) {
     getMovieList(match.params.id);
   }, []);
 
+  let videoCode;
+  if (youtubeList) {
+    videoCode = youtubeList.split("v=")[1].split("&")[0];
+  }
+  console.log(youtubeList)
 
   return (
     <Fragment>
@@ -102,7 +107,7 @@ function Details({ match }) {
           <Typography className={classes.typo} variant="body1">
             <strong>Trailer: </strong>
           </Typography>
-          <YouTube videoId={youtubeList} opts={opts} />
+          <YouTube videoId={videoCode} opts={opts} config={{ youtube: { playerVars: { origin: 'https://youtube.com', host: 'https://www.youtube.com' } } }} />
         </Grid>
         <Grid item xs={2} style={{ padding: 0 }}>
           <Box display="block">
