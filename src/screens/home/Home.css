@@ -7,3 +7,23 @@
 .heading-text {
     font-size: 1rem;
 }
+
+.flex-container {
+    display: flex;
+}
+  
+.left, .right {
+    margin: 16px;
+}
+  
+.left {
+    flex-basis: 76%;
+}
+  
+.right {
+    flex-basis: 24%;
+}
+
+.filter-apply-btn {
+    align-items: center;
+}
