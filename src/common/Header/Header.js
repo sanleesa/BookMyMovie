@@ -1,30 +1,40 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import './Header.css'
 import logo from '../../assets/logo.svg'
 import {
   Button,
   Tabs,
   Tab,
+  Box,
   TextField
 } from '@material-ui/core'
-import { styled } from '@material-ui/styles'
-import { compose, spacing, palette } from '@material-ui/system';
-import Modal from 'react-modal'
+import Modal from 'react-modal';
+import Link from 'react-router-dom/Link';
+import { makeStyles } from '@material-ui/core';
+import axios from 'axios';
 
-const Box = styled('div')(
-  compose(
-    spacing,
-    palette,
-  ),
-)
+const modalStyles = {
+  content: {
+    inset: "50% auto auto 50%",
+    transform: "translate(-50%,-50%)",
+    maxWidth: "300px",
+  },
+};
 
-function Header() {
+const useStyles = makeStyles(theme => ({
+  loginButton: {
+    marginLeft: theme.spacing(1),
+  },
+}));
+
+function Header({ showBookNowButton, id }) {
 
   Modal.setAppElement("#root")
+  const classes = useStyles();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [value, setValue] = useState(0)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [value, setValue] = useState(0);
 
   const [userName, setUserName] = useState({
     username: "",
@@ -61,20 +71,42 @@ function Header() {
     helperText: "",
     error: false
   })
-  const [registration, setRegistration] = useState(false)
+  const [registration, setRegistration] = useState(false);
 
-  const modalStyles = {
-    content: {
-      inset: "50% auto auto 50%",
-      transform: "translate(-50%,-50%)",
-      maxWidth: "300px",
-    },
-  }
-
+  const registerUser = async () => {
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(
+        {
+          "email_address": email.email,
+          "first_name": firstName.firstname,
+          "last_name": lastName.lastname,
+          "password": regsiterPassword.regsiterpass,
+          "mobile_number": contact.contact
+        }
+      )
+    };
+    const rawData = await fetch('http://localhost:8085/api/v1/signup', requestOptions);
+    const response = await rawData.json();
+    console.log(response);
+    console.log({
+      "email_address": email.email,
+      "first_name": firstName.firstname,
+      "last_name": lastName.lastname,
+      "mobile_number": contact.contact,
+      "password": regsiterPassword.regsiterpass
+    })
+  };
 
   const handleRegister = (event) => {
     event.preventDefault();
+    registerUser();
     setRegistration(true);
+    setModalIsOpen(false);
   }
 
   const openModal = () => {
@@ -134,42 +166,102 @@ function Header() {
         username: "",
         helperText: "",
         error: false
-      }
+      };
       const loginPassword = {
         loginpassword: "",
         helperText: "",
         error: false
-      }
-      setUserName(userName)
-      setLoginPassword(loginPassword)
+      };
+      const firstName = {
+        firstname: "",
+        helperText: "",
+        error: false
+      };
+      const lastName = {
+        lastname: "",
+        helperText: "",
+        error: false
+      };
+      const email = {
+        email: "",
+        helperText: "",
+        error: false
+      };
+      const regsiterPassword = {
+        registerpass: "",
+        helperText: "",
+        error: false
+      };
+      const contact = {
+        contact: "",
+        helperText: "",
+        error: false
+      };
+      setUserName(userName);
+      setLoginPassword(loginPassword);
+      setFirstName(firstName);
+      setLastName(lastName);
+      setEmail(email);
+      setRegsiterPassword(regsiterPassword);
+      setContact(contact);
     }
     setValue(newValue)
   }
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault()
-
-    // if (userName.username === "" || loginPassword.loginpassword === "") {
-    //   userName["error"] = true
-    //   loginPassword["error"] = true
-    //   userName["helperText"] = "required";
-    //   loginPassword["helperText"] = "required";
-    //   console.log("Hi");
-    //   console.log(userName, loginPassword)
-    // }
 
     if (userName.error || loginPassword.error) {
       return
     }
     if (!userName.error && !loginPassword.error) {
-      // const userPassword = localStorage.getItem(usernameObj.username)
-      // if (userPassword === null) return
-      // if (userPassword === loginPasswordObj.loginPassword) {
-      //   setIsLoggedIn(true)
-      //   closeModal()
-      // }
-      setIsLoggedIn(true)
-      closeModal()
+      const { username, password } = { username: userName.username, password: loginPassword.loginpassword }
+      const headers = {
+        "authorization": `Basic ${window.btoa(username + ":" + password)}`,
+        'Content-Type': 'application/json',
+        'Cache-Control': "no-cache"
+      }
+      console.log(headers)
+      await axios.post('http://localhost:8085/api/v1/auth/login/', {}, { headers }).then(response => {
+        if (response.status === 200) {
+          window.sessionStorage.setItem('user-details', JSON.stringify(response));
+          window.sessionStorage.setItem('access-token', response.headers['access-token']);
+          setIsLoggedIn(true);
+          setModalIsOpen(false);
+        }else {
+          const error = new Error();
+          error.message = response.message || 'Something went wrong.';
+        }
+        console.log(response)
+      }).catch(error => {
+        alert(error.message);
+      })
+    }
+  }
+
+  const handleLogout = (event) => {
+    event.preventDefault();
+    try {
+      const accessToken = window.sessionStorage.getItem('access-token');
+
+      fetch("http://localhost:8085/api/v1/auth/logout",
+        {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+            authorization: `Bearer ${accessToken}`
+          }
+        }
+      );
+
+      window.sessionStorage.setItem('user-details', null);
+      window.sessionStorage.setItem('access-token', null);
+
+      setIsLoggedIn(false)
+
+    } catch (error) {
+      alert(`Error: ${error.message}`);
     }
   }
 
@@ -213,15 +305,37 @@ function Header() {
     }
   }
 
+  // console.log(
+  //   {
+  //     "email_address": email.email,
+  //     "first_name": firstName.firstname,
+  //     "last_name": lastName.lastname,
+  //     "mobile_number": contact.contact,
+  //     "password": regsiterPassword.regsiterpass
+  //   }
+  // );
+
   return (
     <Fragment>
       <div className='header-div'>
         <img src={logo} className="logo" alt="logo" />
+        {showBookNowButton && !isLoggedIn && (
+          <Button variant="contained" color="primary">
+            Book Show
+          </Button>
+        )}
+        {showBookNowButton && isLoggedIn && (
+          <Link to={`/bookshow/${id}`}>
+            <Button variant="contained" color="primary">
+              Book Show
+            </Button>
+          </Link>
+        )}
         {
           isLoggedIn ?
-            <Button variant="contained" className='header-btn' onClick={() => { setIsLoggedIn(false) }}>Logout</Button>
+            <Button variant="contained" className={classes.loginButton} onClick={handleLogout}>Logout</Button>
             :
-            <Button variant="contained" className='header-btn' onClick={openModal}>Login</Button>
+            <Button variant="contained" className={classes.loginButton} onClick={openModal}>Login</Button>
         }
 
         <Modal
