@@ -1,32 +1,19 @@
 .header-div {
-    background-color: #222222;
+    background-color: #222;
     height: 36px;
     padding: 8px 32px 8px 16px;
+    display: flex;
 }
 
 .logo {
     background-color: #ff7f7f;
     height: 35px;
-    -webkit-animation:spin 8s linear infinite;
-    -moz-animation:spin 8s linear infinite;
-    animation:spin 8s linear infinite;
+    animation: rotate-logo infinite 8s linear;
+    margin-right: auto;
 }
-
-@-moz-keyframes spin { 
-    100% { -moz-transform: rotateY(360deg); } 
-}
-
-@-webkit-keyframes spin { 
-    100% { -webkit-transform: rotateY(360deg); } 
-}
-
-@keyframes spin { 
-    100% { 
-        -webkit-transform: rotateY(360deg); 
-        transform:rotateY(360deg); 
-    } 
-}
-
-.header-btn {
-    float: right;
+  
+@keyframes rotate-logo {
+    from {
+      transform: scaleX(-1);
+    }
 }
